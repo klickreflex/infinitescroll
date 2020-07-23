@@ -15,11 +15,11 @@
         <h1 class="text-3xl">Infinite Scroll</h1>
     </div>
 
-    <div data-slides-wrapper class="w-full mt-4 overflow-hidden bg-yellow-200">
+    <div data-slides-wrapper class="w-full mt-8 overflow-hidden bg-orange-200">
         <div
             data-slides-container
-            data-slides-direction="normal"
-            data-slides-duration="10000"
+            data-slides-direction="reverse"
+            data-slides-duration="12000"
             class="relative inline-flex border border-black">
             <div data-slides-list class="inline-flex border-2 border-red-500 slides">
                 <div
@@ -41,59 +41,81 @@
             </div>
         </div>
     </div>
+
+    <div data-slides-wrapper class="w-full mt-8 overflow-hidden bg-yellow-200">
+        <div
+            data-slides-container
+            data-slides-direction="normal"
+            data-slides-duration="13000"
+            class="relative inline-flex border border-black">
+            <div data-slides-list class="inline-flex border-2 border-red-500 slides">
+                <div
+                    data-slides-item
+                    class="inline-flex items-center justify-center w-48 h-48 text-3xl font-bold text-white bg-pink-500 rounded-full"
+                >
+                    1
+                </div>
+                <div
+                    data-slides-item
+                    class="inline-flex items-center justify-center w-48 h-48 text-3xl font-bold text-white bg-purple-500 rounded-full">
+                    2
+                </div>
+                <div
+                    data-slides-item
+                    class="inline-flex items-center justify-center w-48 h-48 text-3xl font-bold text-white bg-teal-500 rounded-full">
+                    3
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script>
 
-const slidesContainer = document.querySelector('[data-slides-container]');
-const slidesWrapper = document.querySelector('[data-slides-wrapper]');
-const slidesList = document.querySelector('[data-slides-list]');
+const allSlidesWrappers = document.querySelectorAll('[data-slides-wrapper]');
 
-function cloneUntilFull(slidesList, slidesWrapper) {
-    let slidesWidth = slidesList.offsetWidth;
-    let wrapperWidth = slidesWrapper.offsetWidth;
-    let containerWidth = slidesContainer.offsetWidth;
-    let i = 0;
+for (slidesWrapper of allSlidesWrappers) {
+    var slidesContainer = slidesWrapper.querySelector('[data-slides-container]')
+    var slidesList = slidesWrapper.querySelector('[data-slides-list]');
 
-
-    while ((containerWidth / 2) < wrapperWidth) {
-        cloneSlidesList(i);
-        containerWidth = slidesContainer.offsetWidth;
-        i++
+    function cloneUntilFull(slidesList, slidesWrapper) {
+        for (var containerWidth = slidesContainer.offsetWidth; containerWidth < (slidesWrapper.offsetWidth * 2); containerWidth = slidesWrapper.querySelector('[data-slides-container]').offsetWidth) {
+            cloneSlidesList();
+        }
     }
-}
 
-function animateSlidesList(direction, duration) {
-    slidesContainer.animate([
-        { left: 0 },
-        { left: `-${slidesContainer.offsetWidth}px` },
-    ], {
-        duration: parseInt(duration) || 10000,
-        iterations: Infinity,
-        direction: direction || 'normal',
+    function animateSlidesList(direction, duration) {
+        slidesContainer.animate([
+            { left: 0 },
+            { left: `-${slidesContainer.offsetWidth}px` },
+        ], {
+            duration: parseInt(duration) || 10000,
+            iterations: Infinity,
+            direction: direction || 'normal',
+        });
+    }
+
+    animateSlidesList(
+        slidesContainer.dataset.slidesDirection,
+        slidesContainer.dataset.slidesDuration
+    );
+
+
+    function cloneSlidesList() {
+        var clone = slidesContainer.querySelector('[data-slides-list]').cloneNode(true);
+        slidesContainer.appendChild(clone);
+    }
+
+    var ro = new ResizeObserver(entries => {
+        for (let entry of entries) {
+            cloneUntilFull(slidesList, slidesWrapper);
+        }
     });
+
+
+    cloneUntilFull(slidesList, slidesWrapper);
+    ro.observe(slidesWrapper);
 }
 
-animateSlidesList(
-    slidesContainer.dataset.slidesDirection,
-    slidesContainer.dataset.slidesDuration
-);
-
-
-function cloneSlidesList(slideNumber) {
-    const slidesLists = document.querySelectorAll('[data-slides-list]');
-    const itemToCopy = slidesLists[slideNumber];
-    const lastItem = slidesLists[slidesLists.length - 1];
-    const clone = itemToCopy.cloneNode(true);
-    lastItem.after(clone);
-}
-
-const ro = new ResizeObserver(entries => {
-    for (let entry of entries) {
-        cloneUntilFull(slidesList, slidesWrapper);
-    }
-});
-
-
-ro.observe(slidesWrapper);
 </script>
 
 </body>
