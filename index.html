@@ -16,7 +16,11 @@
     </div>
 
     <div data-slides-wrapper class="w-full mt-4 overflow-hidden bg-yellow-200">
-        <div data-slides-container class="relative inline-flex border border-black">
+        <div
+            data-slides-container
+            data-slides-direction="normal"
+            data-slides-duration="10000"
+            class="relative inline-flex border border-black">
             <div data-slides-list class="inline-flex border-2 border-red-500 slides">
                 <div
                     data-slides-item
@@ -37,7 +41,6 @@
             </div>
         </div>
     </div>
-
 <script>
 
 const slidesContainer = document.querySelector('[data-slides-container]');
@@ -51,7 +54,6 @@ function cloneUntilFull(slidesList, slidesWrapper) {
     let i = 0;
 
 
-
     while ((containerWidth / 2) < wrapperWidth) {
         cloneSlidesList(i);
         containerWidth = slidesContainer.offsetWidth;
@@ -59,18 +61,21 @@ function cloneUntilFull(slidesList, slidesWrapper) {
     }
 }
 
-function animateSlidesList(direction) {
+function animateSlidesList(direction, duration) {
     slidesContainer.animate([
         { left: 0 },
         { left: `-${slidesContainer.offsetWidth}px` },
     ], {
-        duration: 10000,
+        duration: parseInt(duration) || 10000,
         iterations: Infinity,
         direction: direction || 'normal',
     });
 }
 
-animateSlidesList();
+animateSlidesList(
+    slidesContainer.dataset.slidesDirection,
+    slidesContainer.dataset.slidesDuration
+);
 
 
 function cloneSlidesList(slideNumber) {
